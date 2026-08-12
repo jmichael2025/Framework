@@ -56,9 +56,22 @@
                         <a class="nav-link" href="#">Contact</a>
                     </li>
 
+                    {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="btn btn-light ms-lg-2" href="#">Login</a>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-light ms-lg-2">
+                                Logout
+                            </button>
+                        </form>
                     </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="btn btn-light ms-lg-2" href="{% url 'login' %}">
+                            Login
+                        </a>
+                    </li>
+                    {% endif %}
 
                 </ul>
 

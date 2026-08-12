@@ -16,6 +16,14 @@
                                                 <p><strong>Organizer:</strong> {{ event.organizer }}</p>
                                         </div>
                                         <a href="{% url 'event_list' %}" class="btn btn-primary">Back to Events</a>
+                                        {% if user == event.created_by %}
+                                        <a href="{% url 'edit_event' event.id %}" class="btn btn-secondary">
+                                                Edit Event
+                                        </a>
+                                        <a href="{% url 'delete_event' event.id %}" class="btn btn-danger">
+                                                Delete Event
+                                        </a>
+                                        {% endif %}
                                 </div>
                         </div>
                 </div>

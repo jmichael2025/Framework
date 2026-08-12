@@ -4,6 +4,7 @@ from django.core.mail import send_mail
 from django.urls import reverse
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
 
 from.models import Event 
@@ -26,7 +27,9 @@ def create_event(request):
     if request.method == 'POST':
         form = EventForm(request.POST)
         if form.is_valid():
-            form.save()
+            event = form.save(commit=False)
+            event.created_by = request.user
+            event.save()
             return redirect('event_list')
     else:
         form = EventForm()
@@ -96,4 +99,42 @@ def dashboard(request):
         request,
         'events/dashboard.html',
         {'events': events}
+    )
+
+def edit_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+
+    if event.created_by != request.user:
+        return redirect('event_detail', event_id=event.id)
+
+    if request.method == 'POST':
+        form = EventForm(request.POST, instance=event)
+
+        if form.is_valid():
+            form.save()
+            return redirect('event_detail', event_id=event.id)
+
+    else:
+        form = EventForm(instance=event)
+
+    return render(
+        request,
+        'events/edit_event.html',
+        {'form': form, 'event': event}
+    )
+
+def delete_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+
+    if event.created_by != request.user:
+        return redirect('event_detail', event_id=event.id)
+
+    if request.method == 'POST':
+        event.delete()
+        return redirect('event_list')
+
+    return render(
+        request,
+        'events/delete_event.html',
+        {'event': event}
     )
