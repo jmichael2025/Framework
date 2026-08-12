@@ -1,7 +1,7 @@
 from django.db import models
 
-# Create your models here.
-from django.db import models
+
+from django.contrib.auth.models import User
 
 
 class Event(models.Model):
@@ -20,6 +20,8 @@ class Event(models.Model):
     time = models.TimeField()
     location = models.CharField(max_length=200)
     organizer = models.CharField(max_length=100)
+
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='events')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

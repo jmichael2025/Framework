@@ -1,0 +1,55 @@
+{% extends 'events/base.html' %}
+
+{% block title %}Dashboard | CampusConnect{% endblock %}
+
+{% block content %}
+
+<div class="container my-5">
+
+    <h1 class="mb-4">Welcome, {{ user.username }}!</h1>
+
+    <h2>Your Events</h2>
+
+    {% if events %}
+
+        {% for event in events %}
+
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+
+                    <h3>{{ event.title }}</h3>
+
+                    <p>{{ event.description }}</p>
+
+                    <p>
+                        <strong>Date:</strong> {{ event.date }}
+                    </p>
+
+                    <p>
+                        <strong>Location:</strong> {{ event.location }}
+                    </p>
+
+                    <a href="{% url 'event_detail' event.id %}"
+                       class="btn btn-primary">
+                        View Details
+                    </a>
+
+                </div>
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>You haven't created any events yet.</p>
+
+        <a href="{% url 'create_event' %}"
+           class="btn btn-primary">
+            Create an Event
+        </a>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
