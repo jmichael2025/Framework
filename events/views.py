@@ -7,6 +7,8 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.db import models
 from django.db.models import query
 
@@ -68,14 +70,16 @@ def event_detail(request, event_id):
         }
     )
 
-
+@login_required
 def create_event(request):
     if request.method == 'POST':
         form = EventForm(request.POST)
+
         if form.is_valid():
             event = form.save(commit=False)
             event.created_by = request.user
             event.save()
+            messages.success(request, 'Event created successfully.')
             return redirect('event_list')
     else:
         form = EventForm()
@@ -137,7 +141,8 @@ def verify_email(request, uidb64, token):
         return render(request, 'events/email_verified.html')
     else:
         return render(request, 'events/verification_failed.html')
-
+    
+@login_required
 def dashboard(request):
     created_events = Event.objects.filter(created_by=request.user)
 
@@ -160,6 +165,8 @@ def edit_event(request, event_id):
 
         if form.is_valid():
             form.save()
+            messages.success(request, 'Event updated successfully!')
+
             return redirect('event_detail', event_id=event.id)
 
     else:
@@ -179,6 +186,7 @@ def delete_event(request, event_id):
 
     if request.method == 'POST':
         event.delete()
+        messages.success(request, 'Event deleted successfully!')
         return redirect('event_list')
 
     return render(
@@ -195,10 +203,11 @@ def register_event(request, event_id):
             user=request.user,
             event=event
         )
-
+        messages.success(request, 'Successfully registered for the event!')
         return redirect('event_detail', event_id=event.id)
 
     return redirect('event_detail', event_id=event.id)
+
 
 def cancel_registration(request, event_id):
     event = get_object_or_404(Event, id=event_id)
@@ -208,5 +217,6 @@ def cancel_registration(request, event_id):
             user=request.user,
             event=event
         ).delete()
-
+        
+    messages.success(request, 'Successfully canceled registration for the event!')
     return redirect('event_detail', event_id=event.id)
