@@ -20,6 +20,7 @@ def home(request):
 
 def event_list(request):
     query = request.GET.get('q', '')
+    category = request.GET.get('category', '')
 
     events = Event.objects.all()
 
@@ -28,6 +29,8 @@ def event_list(request):
             models.Q(title__icontains=query) |
             models.Q(description__icontains=query)
         )
+    if category:
+        events = events.filter(category=category)
 
     return render(
         request,
@@ -35,6 +38,8 @@ def event_list(request):
         {
             'events': events,
             'query': query,
+            'category': category,
+            'categories': Event.CATEGORY_CHOICES
         }
     )
 

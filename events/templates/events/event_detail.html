@@ -5,7 +5,7 @@
         <div class="row justify-content-center">
                 <div class="col-md-8">
                         <div class="card shadow-sm border-0">
-                                <div class="card-body" p-4 p-md-5>
+                                <div class="card-body p-4 p-md-5">
                                         <h1 class="mb-4"> {{ event.title }} </h1>
                                         <p class="mb-4"> {{ event.description }} </p>
                                         <div class="mb-4">
@@ -16,6 +16,7 @@
                                                 <p><strong>Organizer:</strong> {{ event.organizer }}</p>
                                         </div>
                                         <a href="{% url 'event_list' %}" class="btn btn-primary">Back to Events</a>
+                                        {% if user.is_authenticated %}
                                         {% if user == event.created_by %}
                                         <a href="{% url 'edit_event' event.id %}" class="btn btn-secondary">
                                                 Edit Event
@@ -23,12 +24,68 @@
                                         <a href="{% url 'delete_event' event.id %}" class="btn btn-danger">
                                                 Delete Event
                                         </a>
+
+                                        {% else %}
+
+                                        {% if is_registered %}
+
+                                        <span class="btn btn-success">
+                                                Already Registered
+                                        </span>
+
+                                        <form method="post" action="{% url 'cancel_registration' event.id %}"
+                                                style="display: inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-warning">
+                                                        Cancel Registration
+                                                </button>
+                                        </form>
+
+                                        {% else %}
+                                        <form method="post" action="{% url 'register_event' event.id %}"
+                                                style="display: inline;">
+                                                {% csrf_token %}
+
+                                                <button type="submit" class="btn btn-success">
+                                                        Register for Event
+                                                </button>
+                                        </form>
+
+
+                                        {% endif %}
+
+                                        {% endif %}
+
+                                        {% endif %}
+
+                                        {% if user == event.created_by %}
+
+                                        <hr class="my-4">
+
+                                        <h3>Event Attendees</h3>
+
+                                        {% if attendees %}
+
+                                        <p>
+                                                <strong>Registered Attendees:</strong> {{ attendees|length }}
+                                        </p>
+
+                                        <ul>
+                                                {% for registration in attendees %}
+                                                <li>{{ registration.user.username }}</li>
+                                                {% endfor %}
+                                        </ul>
+
+                                        {% else %}
+
+                                        <p>No one has registered for this event yet.</p>
+
+                                        {% endif %}
+
                                         {% endif %}
                                 </div>
                         </div>
                 </div>
         </div>
 </div>
-
-
 {% endblock %}
