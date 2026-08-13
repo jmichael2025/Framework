@@ -42,8 +42,17 @@
                         <a class="nav-link" href="{% url 'home' %}">Home</a>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'event_list' %}">Events</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="eventsDropdown" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Events
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="eventsDropdown">
+                            <li><a class="dropdown-item" href="{% url 'event_list' %}">view Events</a></li>
+                            {% if user.is_authenticated %}
+                            <li><a class="dropdown-item" href="{% url 'create_event' %}">Create Event</a></li>
+                            {% endif %}
+                        </ul>
                     </li>
                     {% if user.is_authenticated %}
                     <li class="nav-item">
@@ -52,9 +61,7 @@
                         </a>
                     </li>
                     {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'create_event' %}">Create Event</a>
-                    </li>
+
 
                     <li class="nav-item">
                         <a class="nav-link" href="#">About</a>
@@ -65,20 +72,48 @@
                     </li>
 
                     {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <form method="post" action="{% url 'logout' %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-light ms-lg-2">
-                                Logout
-                            </button>
-                        </form>
+
+                    <!-- Username Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+
+                            👤 {{ user.username }}
+                        </a>
+
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+
+                            <li>
+                                <span class="dropdown-item-text">
+                                    Signed in as <strong>{{ user.username }}</strong>
+                                </span>
+                            </li>
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+                            <li>
+                                <form method="post" action="{% url 'logout' %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item">
+                                        Logout
+                                    </button>
+                                </form>
+                            </li>
+
+                        </ul>
                     </li>
+
                     {% else %}
+
+                    <!-- Login -->
                     <li class="nav-item">
                         <a class="btn btn-light ms-lg-2" href="{% url 'login' %}">
                             Login
                         </a>
                     </li>
+
                     {% endif %}
 
                 </ul>
@@ -88,19 +123,21 @@
     </nav>
 
 
+
+
     <!-- Main Content -->
     <main class="flex-grow-1">
         {% if messages %}
         <div class="container mt-3">
             <div class="row justify-content-center">
-            <div class="col-md-8">
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            {% endfor %}
-            </div>
+                <div class="col-md-8">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
         {% endif %}
