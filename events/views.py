@@ -140,7 +140,7 @@ def verify_email(request, uidb64, token):
         user.save()
         return render(request, 'events/email_verified.html')
     else:
-        return render(request, 'events/verification_failed.html')
+        return render(request, 'events/email_verification_failed.html')
     
 @login_required
 def dashboard(request):
