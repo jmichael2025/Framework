@@ -220,3 +220,9 @@ def cancel_registration(request, event_id):
         
     messages.success(request, 'Successfully canceled registration for the event!')
     return redirect('event_detail', event_id=event.id)
+
+def about(request):
+    return render(request, 'events/about.html')
+
+def contact(request):
+    return render(request, 'events/contact.html')
