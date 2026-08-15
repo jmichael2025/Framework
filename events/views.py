@@ -108,12 +108,12 @@ def register(request):
                 )
             )
 
-            send_mail(
-                'Verify your CampusConnect account',
-                f'Click the following link to verify your email:\n\n{verification_url}',
-                None,
-                [user.email],
-            )
+           # send_mail(
+                #'Verify your CampusConnect account',
+              #  f'Click the following link to verify your email:\n\n{verification_url}',
+             #   None,
+               # [user.email],
+           # )
 
             return render(
                 request,
