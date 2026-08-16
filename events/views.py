@@ -14,7 +14,9 @@ from django.db.models import query
 
 from.models import Event ,Registration
 from .forms import EventForm, RegisterForm
+import logging
 
+logger = logging.getLogger(__name__)
 
 def home(request):
     events = Event.objects.all()
@@ -133,10 +135,11 @@ def register(request):
                     fail_silently=False,
                 )
 
-                print(f"EMAIL SENT RESULT: {email_sent}")
+                logger.info(f"EMAIL SENT RESULT: {email_sent}")
 
             except Exception as e:
-                print(f"EMAIL ERROR: {type(e).__name__}: {e}")
+                #print(f"EMAIL ERROR: {type(e).__name__}: {e}")
+                logger.exception
                 raise
 
             return render(
