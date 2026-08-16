@@ -108,20 +108,41 @@ def register(request):
                 )
             )
 
-            email_sent = send_mail(
-                'Verify your CampusConnect account',
-                f'Click the following link to verify your email:\n\n{verification_url}',
-                None,
-                [user.email],
-                fail_silently=False,
-            )
-            print("EMAIL SENT RESULT: {email_sent}")
+           # email_sent = send_mail(
+             #   'Verify your CampusConnect account',
+            #    f'Click the following link to verify your email:\n\n{verification_url}',
+            #    None,
+             #   [user.email],
+              #  fail_silently=False,
+            #)
+            #print("EMAIL SENT RESULT: {email_sent}")
+
+       # except Exception as e:
+           # print(f"EMAIL ERROR: {type(e).__name__}: {e}")
+        #raise
+            #return render(
+               # request,
+                #'events/email_verification_sent.html'
+            #)
+            try:
+                email_sent = send_mail(
+                    'Verify your CampusConnect account',
+                    f'Click the following link to verify your email:\n\n{verification_url}',
+                    None,
+                    [user.email],
+                    fail_silently=False,
+                )
+
+                print(f"EMAIL SENT RESULT: {email_sent}")
+
+            except Exception as e:
+                print(f"EMAIL ERROR: {type(e).__name__}: {e}")
+                raise
 
             return render(
                 request,
                 'events/email_verification_sent.html'
             )
-
     else:
         form = RegisterForm()
 
