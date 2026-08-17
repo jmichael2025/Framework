@@ -1,4 +1,3 @@
-
 from django.shortcuts import render, redirect
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -10,11 +9,14 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import models
-from django.db.models import query
+from django.http import HttpResponse
 
-from.models import Event ,Registration
+
+
+from .models import Event ,Registration
 from .forms import EventForm, RegisterForm
 import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -88,78 +90,6 @@ def create_event(request):
     return render(request, 'events/create_event.html', {'form': form})
 
 
-def register(request):
-    if request.method == 'POST':
-        form = RegisterForm(request.POST)
-
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.is_active = False
-            user.save()
-
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            token = default_token_generator.make_token(user)
-
-            verification_url = request.build_absolute_uri(
-                reverse(
-                    'verify_email',
-                    kwargs={
-                        'uidb64': uid,
-                        'token': token,
-                    }
-                )
-            )
-
-           # email_sent = send_mail(
-             #   'Verify your CampusConnect account',
-            #    f'Click the following link to verify your email:\n\n{verification_url}',
-            #    None,
-             #   [user.email],
-              #  fail_silently=False,
-            #)
-            #print("EMAIL SENT RESULT: {email_sent}")
-
-       # except Exception as e:
-           # print(f"EMAIL ERROR: {type(e).__name__}: {e}")
-        #raise
-            #return render(
-               # request,
-                #'events/email_verification_sent.html'
-            #)
-            logger.info("REGISTER: about to send verification email")
-
-            try:
-
-                email_sent = send_mail(
-                    'Verify your CampusConnect account',
-                    f'Click the following link to verify your email:\n\n{verification_url}',
-                    None,
-                    [user.email],
-                    fail_silently=False,
-                )
-
-                logger.info(f"REGISTER: email send returned{email_sent}")
-            
-
-            except Exception as e:
-                
-                #print(f"EMAIL ERROR: {type(e).__name__}: {e}")
-                logger.exception(f"REGISTER: EMAIL ERROR: {type(e).__name__}: {e}")
-                raise
-
-            logger.info("REGISTER: email section completed")
-
-            return render(
-                request,
-                'events/email_verification_sent.html'
-            )
-        
-    else:
-        form = RegisterForm()
-
-    return render(request, 'events/register.html', {'form': form})
-
-
 def verify_email(request, uidb64, token):
     User = get_user_model()
 
@@ -175,6 +105,7 @@ def verify_email(request, uidb64, token):
         return render(request, 'events/email_verified.html')
     else:
         return render(request, 'events/email_verification_failed.html')
+    
     
 @login_required
 def dashboard(request):
@@ -228,6 +159,66 @@ def delete_event(request, event_id):
         'events/delete_event.html',
         {'event': event}
     )
+def register(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.is_active = False
+            user.save()
+
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+
+            verification_url = request.build_absolute_uri(
+                reverse(
+                    'verify_email',
+                    kwargs={
+                        'uidb64': uid,
+                        'token': token,
+                    }
+                )
+            )
+
+            print("REGISTER: about to send verification email", flush=True)
+
+            try:
+                email_sent = send_mail(
+                    'Verify your CampusConnect account',
+                    f'Click the following link to verify your email:\n\n{verification_url}',
+                    None,
+                    [user.email],
+                    fail_silently=False,
+                )
+
+                print(
+                    f"REGISTER: email send returned {email_sent}",
+                    flush=True
+                )
+
+            except Exception as e:
+                print(
+                    f"REGISTER: EMAIL ERROR: {type(e).__name__}: {e}",
+                    flush=True
+                )
+                raise
+
+            print("REGISTER: email section completed", flush=True)
+
+            return render(
+                request,
+                'events/email_verification_sent.html'
+            )
+
+    else:
+        form = RegisterForm()
+
+    return render(
+        request,
+        'events/register.html',
+        {'form': form}
+    )
 
 def register_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
@@ -260,3 +251,6 @@ def about(request):
 
 def contact(request):
     return render(request, 'events/contact.html')
+
+def health_check(request):
+    return HttpResponse("OK")
