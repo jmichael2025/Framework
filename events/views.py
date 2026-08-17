@@ -126,7 +126,10 @@ def register(request):
                # request,
                 #'events/email_verification_sent.html'
             #)
+            logger.info("REGISTER: about to send verification email")
+
             try:
+
                 email_sent = send_mail(
                     'Verify your CampusConnect account',
                     f'Click the following link to verify your email:\n\n{verification_url}',
@@ -135,17 +138,22 @@ def register(request):
                     fail_silently=False,
                 )
 
-                logger.info(f"EMAIL SENT RESULT: {email_sent}")
+                logger.info(f"REGISTER: email send returned{email_sent}")
+            
 
             except Exception as e:
+                
                 #print(f"EMAIL ERROR: {type(e).__name__}: {e}")
-                logger.exception
+                logger.exception(f"REGISTER: EMAIL ERROR: {type(e).__name__}: {e}")
                 raise
+
+            logger.info("REGISTER: email section completed")
 
             return render(
                 request,
                 'events/email_verification_sent.html'
             )
+        
     else:
         form = RegisterForm()
 
