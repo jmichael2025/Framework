@@ -14,6 +14,7 @@ urlpatterns = [
     path('events/<int:event_id>/cancel-registration/', views.cancel_registration, name='cancel_registration'),
     path('events/create/', views.create_event, name='create_event'),
     path('health/', views.health_check, name='health_check'),
+    path('smtp-test/', views.smtp_test, name='smtp_test'),
 
     path('register/', views.register, name='register'),
     path('verify/<uidb64>/<token>/', views.verify_email, name='verify_email'),

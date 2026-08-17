@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import models
 from django.http import HttpResponse
+import socket
 
 
 
@@ -220,6 +221,22 @@ def register(request):
         {'form': form}
     )
 
+
+def smtp_test(request):
+    try:
+        connection = socket.create_connection(
+            ("smtp.mailersend.net", 587),
+            timeout=10
+        )
+        connection.close()
+        return HttpResponse("SMTP CONNECTION OK")
+    except Exception as e:
+        return HttpResponse(
+            f"SMTP CONNECTION FAILED: {type(e).__name__}: {e}",
+            status=500
+        )
+
+    
 def register_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
 
